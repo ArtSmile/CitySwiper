@@ -6,9 +6,10 @@ function glslRawPlugin() {
     name: 'glsl-raw',
     enforce: 'pre',
     load(id) {
-      if (id.endsWith('.glsl')) {
-        this.addWatchFile(id);
-        const code = readFileSync(id, 'utf-8');
+      const cleanId = id.split('?')[0];
+      if (cleanId.endsWith('.glsl')) {
+        this.addWatchFile(cleanId);
+        const code = readFileSync(cleanId, 'utf-8');
         return `export default ${JSON.stringify(code)};`;
       }
     },

@@ -1999,12 +1999,34 @@ export function buildDemoPlacesForCity(cityMeta) {
     },
   ];
 
-  return rawSpots.map((spot) => {
+  const DEMO_PHOTO_POOLS = {
+    restaurant: [
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=720&q=80',
+    ],
+    bar: [
+      'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1560512823-829485b8bf24?auto=format&fit=crop&w=720&q=80',
+    ],
+    cafe: [
+      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=720&q=80',
+      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=720&q=80',
+    ],
+  };
+
+  return rawSpots.map((spot, spotIdx) => {
     const placeId = `demo_${slug}_${spot.suffix}`;
     const mapsQuery = encodeURIComponent(`${spot.category} in ${queryCity}, ${queryCountry}`);
-    const photoUrls = [1, 2, 3, 4, 5].map(
-      (n) => `https://picsum.photos/seed/${encodeURIComponent(`${spot.seed}-${n}`)}/900/1200`,
-    );
+    const pool = DEMO_PHOTO_POOLS[spot.category] || DEMO_PHOTO_POOLS.restaurant;
+    // Vary photo count (3 to 4) realistically across demo venues
+    const count = 3 + (spotIdx % 2);
+    const photoUrls = pool.slice(0, count);
     return {
       placeId,
       isDemo: true,

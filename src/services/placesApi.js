@@ -75,6 +75,8 @@ const photoUriCache = new Map();
 const photoInFlightMap = new Map();
 const placeDetailsCache = new Map();
 
+const DEFAULT_PLACES_API_KEY = 'AIzaSyCMdPxZqRI_PGYruL-lre_dTF_Bxj-ONnE';
+
 function getClientApiKey() {
   try {
     const custom = window.localStorage.getItem('city_swiper_google_api_key_v1');
@@ -94,7 +96,7 @@ function getClientApiKey() {
     return __GOOGLE_PLACES_API_KEY__.trim();
   }
 
-  return '';
+  return DEFAULT_PLACES_API_KEY;
 }
 
 function requireApiKey() {
@@ -291,7 +293,7 @@ export async function resolvePhotoUrl(
 
   const requestPromise = (async () => {
     const apiKey = requireApiKey();
-    const mediaUrl = `${PLACES_API_BASE}/${photoName}/media?maxWidthPx=${w}&maxHeightPx=${h}&skipHttpRedirect=true`;
+    const mediaUrl = `${PLACES_API_BASE}/${photoName}/media?maxWidthPx=${w}&maxHeightPx=${h}&skipHttpRedirect=true&key=${encodeURIComponent(apiKey)}`;
     const fetchOpts = {
       headers: {
         'X-Goog-Api-Key': apiKey,

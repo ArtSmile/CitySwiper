@@ -198,6 +198,77 @@ function setActionDockEnabled(enabled) {
   }
 }
 
+function pruneFailedSlideAndSyncIndicators(card, failedSlide, place) {
+  if (!card || !failedSlide) return;
+  const carousel = card.querySelector('.venue-carousel');
+  if (!carousel) return;
+
+  const slides = Array.from(carousel.querySelectorAll('.venue-slide'));
+  const slideIndex = slides.indexOf(failedSlide);
+  if (slideIndex === -1) return;
+
+  const wasActive = failedSlide.classList.contains('is-active');
+  failedSlide.remove();
+
+  const remainingSlides = Array.from(carousel.querySelectorAll('.venue-slide'));
+  const mediaContainer = card.querySelector('.venue-media');
+  const storiesBar = card.querySelector('.venue-stories-bar');
+
+  if (remainingSlides.length === 0) {
+    if (storiesBar) storiesBar.remove();
+    if (mediaContainer) {
+      const fallbackDiv = document.createElement('div');
+      fallbackDiv.className = 'venue-photo-slot';
+      fallbackDiv.innerHTML = `<div class="venue-photo-fallback">
+        ${getCategoryIcon(place.category)}
+        <span>${escapeHtml(place.categoryLabel || 'Место')}</span>
+      </div>`;
+      carousel.replaceWith(fallbackDiv);
+    }
+    return;
+  }
+
+  // Re-index remaining slides
+  remainingSlides.forEach((s, idx) => {
+    s.dataset.slideIdx = String(idx);
+  });
+
+  if (wasActive) {
+    const newActiveIdx = Math.min(slideIndex, remainingSlides.length - 1);
+    carousel.dataset.activeSlide = String(newActiveIdx);
+    remainingSlides.forEach((s, idx) => {
+      if (idx === newActiveIdx) {
+        s.classList.add('is-active');
+        s.style.opacity = '1';
+        s.style.zIndex = '2';
+        const img = s.querySelector('.venue-photo');
+        if (img) hydrateLazyPhoto(img, { priority: 'high', fadeIn: false });
+      } else {
+        s.classList.remove('is-active');
+        s.style.opacity = '0';
+        s.style.zIndex = '0';
+      }
+    });
+  }
+
+  // Synchronize indicators bar to exact count of valid remaining slides
+  if (storiesBar) {
+    if (remainingSlides.length <= 1) {
+      storiesBar.style.display = 'none';
+    } else {
+      storiesBar.style.display = 'flex';
+      const curActive = Number(carousel.dataset.activeSlide || 0);
+      storiesBar.innerHTML = remainingSlides
+        .map(
+          (_, idx) => `<span class="venue-story-segment">
+            <span class="venue-story-fill${idx === curActive ? ' is-active' : ''}"></span>
+          </span>`,
+        )
+        .join('');
+    }
+  }
+}
+
 // 5. Venue Card DOM Factory
 function createVenueCardElement(place, depthIndex) {
   const card = document.createElement('article');
@@ -329,18 +400,15 @@ function createVenueCardElement(place, depthIndex) {
     </div>
   `;
 
-  // Graceful per-slide image fallback if any Google photo link fails to load
+  // Dynamic per-slide image error recovery:
+  // If an image fails to load, prune the broken slide and re-sync the stories indicators bar
+  // so the bar always reflects EXACTLY the count of successfully available images.
   card.querySelectorAll('.venue-slide .venue-photo').forEach((imgEl) => {
     imgEl.addEventListener(
       'error',
       () => {
         const slideEl = imgEl.closest('.venue-slide');
-        if (slideEl) {
-          slideEl.innerHTML = `<div class="venue-photo-fallback">
-            ${getCategoryIcon(place.category)}
-            <span>${escapeHtml(place.categoryLabel)}</span>
-          </div>`;
-        }
+        pruneFailedSlideAndSyncIndicators(card, slideEl, place);
       },
       { once: true },
     );

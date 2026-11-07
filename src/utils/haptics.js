@@ -49,3 +49,4 @@ export function triggerHaptic(type = 'grab') {
     // Non-blocking fallback
   }
 }
+

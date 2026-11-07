@@ -1,6 +1,6 @@
 import { animate, utils } from 'animejs';
 import createREGL from 'regl';
-import noise3D from '../shaders/noise3D.glsl';
+import noise3D from '../shaders/noise3D.js';
 import { EASE_UI_OUT, onReducedMotionChange, prefersReducedMotion } from '../ui/animations.js';
 
 /**
