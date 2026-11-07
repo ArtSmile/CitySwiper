@@ -3,6 +3,7 @@ import { resolvePhotoUrl } from '../services/placesApi.js';
 
 export const EASE_UI_OUT = cubicBezier(0.23, 1, 0.32, 1);
 export const EASE_SHEET = cubicBezier(0.32, 0.72, 0, 1);
+export const EASE_GENTLE = cubicBezier(0.25, 1, 0.5, 1);
 
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -306,41 +307,98 @@ export function animateDropdownClose(dropdownEl, chevronEl, openUp = false, shou
 }
 
 /**
- * Animates the Saved Filters panel open/closed via GPU-only transform & opacity (AGENTS.md Rule 1).
+ * Animates the Saved Filters panel open/closed via gentle displacement and height accordion
+ * with GPU-only transform & opacity (AGENTS.md Rule 1 & Emil Kowalski guidelines).
  */
 export function animateFilterPanelState(panelEl, chevronEl, expand, shouldStayClosed = () => false) {
   if (!panelEl) return;
   const reduce = prefersReducedMotion();
+  const shellEl = panelEl.closest('.saved-filters-shell');
   utils.remove(panelEl);
+  if (shellEl) utils.remove(shellEl);
 
   if (expand) {
     panelEl.hidden = false;
+    if (reduce || !shellEl) {
+      panelEl.style.opacity = '1';
+      panelEl.style.transform = '';
+      if (shellEl) {
+        shellEl.style.height = '';
+        shellEl.style.overflow = '';
+      }
+      return;
+    }
+
     panelEl.style.transformOrigin = '50% 0%';
     panelEl.style.opacity = '0';
-    panelEl.style.transform = reduce
-      ? 'translate3d(0px, 0px, 0px) scale(1)'
-      : 'translate3d(0px, -6px, 0px) scale(0.98)';
+    panelEl.style.transform = 'translate3d(0px, -20px, 0px) scale(0.985)';
+
+    // Measure target height cleanly while preventing visual jump
+    shellEl.style.overflow = 'hidden';
+    shellEl.style.height = 'auto';
+    const targetHeight = shellEl.scrollHeight;
+    shellEl.style.height = '0px';
+
+    animate(shellEl, {
+      height: [0, targetHeight],
+      duration: 260,
+      ease: EASE_SHEET,
+      onComplete: () => {
+        shellEl.style.height = '';
+        shellEl.style.overflow = '';
+      },
+    });
 
     animate(panelEl, {
-      opacity: 1,
-      translateY: 0,
-      scale: 1,
-      duration: reduce ? 110 : 170,
-      ease: EASE_UI_OUT,
+      opacity: [0, 1],
+      translateY: [-20, 0],
+      scale: [0.985, 1],
+      duration: 260,
+      ease: EASE_SHEET,
+      onComplete: () => {
+        panelEl.style.transform = '';
+        panelEl.style.opacity = '';
+      },
     });
   } else {
-    animate(panelEl, {
-      opacity: 0,
-      translateY: reduce ? 0 : -5,
-      scale: reduce ? 1 : 0.98,
-      duration: reduce ? 95 : 130,
-      ease: EASE_UI_OUT,
+    if (reduce || !shellEl) {
+      if (shouldStayClosed()) {
+        panelEl.hidden = true;
+      }
+      panelEl.style.transform = '';
+      panelEl.style.opacity = '';
+      if (shellEl) {
+        shellEl.style.height = '';
+        shellEl.style.overflow = '';
+      }
+      return;
+    }
+
+    shellEl.style.overflow = 'hidden';
+    const currentHeight = shellEl.offsetHeight;
+
+    animate(shellEl, {
+      height: [currentHeight, 0],
+      duration: 210,
+      ease: EASE_SHEET,
       onComplete: () => {
         if (shouldStayClosed()) {
           panelEl.hidden = true;
-          panelEl.style.transform = '';
-          panelEl.style.opacity = '';
         }
+        shellEl.style.height = '';
+        shellEl.style.overflow = '';
+      },
+    });
+
+    animate(panelEl, {
+      opacity: [1, 0],
+      translateY: [0, -16],
+      scale: [1, 0.985],
+      duration: 210,
+      ease: EASE_SHEET,
+      onComplete: () => {
+        panelEl.style.transform = '';
+        panelEl.style.opacity = '';
       },
     });
   }
@@ -349,7 +407,7 @@ export function animateFilterPanelState(panelEl, chevronEl, expand, shouldStayCl
     utils.remove(chevronEl);
     animate(chevronEl, {
       rotate: expand ? 180 : 0,
-      duration: reduce ? 105 : 155,
+      duration: reduce ? 105 : 180,
       ease: EASE_UI_OUT,
     });
   }
@@ -415,7 +473,7 @@ export async function hydrateLazyPhoto(
 
 /**
  * Steps the looped venue photo carousel forward ('next') or backward ('prev')
- * wrapping cyclically across all slides via interruptible Anime.js GPU transforms & opacity.
+ * wrapping cyclically across all slides via gentle Anime.js GPU transforms & opacity.
  */
 export function stepCardPhotoCarousel(cardEl, direction) {
   if (!cardEl) return false;
@@ -440,6 +498,13 @@ export function stepCardPhotoCarousel(cardEl, direction) {
     hydrateLazyPhoto(targetImg, { fadeIn: true });
   }
 
+  // Pre-warm the upcoming slide in advance for instantaneous subsequent taps
+  const upcomingIdx = (targetIdx + delta + count) % count;
+  const upcomingImg = slides[upcomingIdx]?.querySelector('.venue-photo');
+  if (upcomingImg) {
+    hydrateLazyPhoto(upcomingImg, { priority: 'low', fadeIn: false });
+  }
+
   slides.forEach((slide, idx) => {
     utils.remove(slide);
     if (idx !== currentIdx && idx !== targetIdx) {
@@ -457,11 +522,11 @@ export function stepCardPhotoCarousel(cardEl, direction) {
     prevSlide.classList.remove('is-active');
     prevSlide.style.zIndex = '1';
     animate(prevSlide, {
-      opacity: 0,
-      translateX: reduce ? 0 : delta * -14,
-      scale: 1,
-      duration: reduce ? 130 : 165,
-      ease: EASE_UI_OUT,
+      opacity: [1, 0],
+      translateX: reduce ? 0 : [0, delta * -24],
+      scale: reduce ? 1 : [1, 0.985],
+      duration: reduce ? 140 : 250,
+      ease: EASE_GENTLE,
     });
   }
 
@@ -471,14 +536,14 @@ export function stepCardPhotoCarousel(cardEl, direction) {
     nextSlide.style.opacity = '0';
     nextSlide.style.transform = reduce
       ? 'translate3d(0px, 0px, 0px) scale(1)'
-      : `translate3d(${delta * 14}px, 0px, 0px) scale(1.015)`;
+      : `translate3d(${delta * 32}px, 0px, 0px) scale(1.02)`;
 
     animate(nextSlide, {
-      opacity: 1,
-      translateX: 0,
-      scale: 1,
-      duration: reduce ? 135 : 185,
-      ease: EASE_UI_OUT,
+      opacity: [0, 1],
+      translateX: [delta * 32, 0],
+      scale: [1.02, 1],
+      duration: reduce ? 150 : 260,
+      ease: EASE_GENTLE,
     });
   }
 
@@ -488,12 +553,12 @@ export function stepCardPhotoCarousel(cardEl, direction) {
       fill.classList.add('is-active');
       fill.style.transformOrigin = delta > 0 ? '0% 50%' : '100% 50%';
       fill.style.opacity = '0.55';
-      fill.style.transform = reduce ? 'scaleX(1)' : 'scaleX(0.28)';
+      fill.style.transform = reduce ? 'scaleX(1)' : 'scaleX(0.2)';
       animate(fill, {
         scaleX: 1,
         opacity: 1,
-        duration: reduce ? 130 : 180,
-        ease: EASE_UI_OUT,
+        duration: reduce ? 140 : 250,
+        ease: EASE_GENTLE,
       });
     } else {
       fill.classList.remove('is-active');
@@ -503,4 +568,65 @@ export function stepCardPhotoCarousel(cardEl, direction) {
   });
 
   return true;
+}
+
+/**
+ * Synchronizes the sliding indicator pill behind the active category tab
+ * in the Saved Places sheet dialog.
+ */
+export function syncSavedTabsIndicator(indicatorEl, tabContainer, activeTabEl, animateTransition = true) {
+  if (!indicatorEl || !tabContainer || !activeTabEl) return;
+  const reduce = prefersReducedMotion();
+  const targetX = activeTabEl.offsetLeft - 4;
+  const targetW = activeTabEl.offsetWidth;
+
+  if (targetW > 0) {
+    indicatorEl.style.width = `${targetW}px`;
+  }
+
+  utils.remove(indicatorEl);
+  if (!animateTransition || reduce) {
+    indicatorEl.style.transform = `translate3d(${targetX}px, 0, 0)`;
+    return;
+  }
+
+  animate(indicatorEl, {
+    translateX: targetX,
+    duration: 240,
+    ease: EASE_UI_OUT,
+  });
+}
+
+/**
+ * Animates a gentle directional crossfade transition when switching between
+ * categories in the Saved Places collection ("все", "избранное", "хочу").
+ */
+export function animateSavedCategoryTransition(contentEl, directionDelta) {
+  if (!contentEl) return;
+  const reduce = prefersReducedMotion();
+  utils.remove(contentEl);
+
+  if (reduce || directionDelta === 0 || directionDelta == null) {
+    animate(contentEl, {
+      opacity: [0, 1],
+      duration: 150,
+      ease: EASE_UI_OUT,
+    });
+    return;
+  }
+
+  const offset = directionDelta > 0 ? 18 : -18;
+  contentEl.style.transform = `translate3d(${offset}px, 0, 0)`;
+  contentEl.style.opacity = '0';
+
+  animate(contentEl, {
+    translateX: 0,
+    opacity: 1,
+    duration: 240,
+    ease: EASE_GENTLE,
+    onComplete: () => {
+      contentEl.style.transform = '';
+      contentEl.style.opacity = '';
+    },
+  });
 }

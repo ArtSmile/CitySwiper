@@ -1,3 +1,4 @@
+import { animate, utils } from 'animejs';
 import {
   COUNTRIES_CATALOG,
   QUICK_CITY_PICKS,
@@ -13,9 +14,12 @@ import {
 } from './services/placesApi.js';
 import { storage } from './services/storage.js';
 import {
+  EASE_GENTLE,
+  EASE_UI_OUT,
   animateDropdownClose,
   animateDropdownOpen,
   animateFilterPanelState,
+  animateSavedCategoryTransition,
   bindAllTactileButtons,
   bindTactileButton,
   bumpSavedCounter,
@@ -28,6 +32,7 @@ import {
   settleStackCards,
   startLoadingPulse,
   stepCardPhotoCarousel,
+  syncSavedTabsIndicator,
 } from './ui/animations.js';
 import { ICONS } from './ui/icons.js';
 import {
@@ -92,6 +97,7 @@ const savedDialogPanel = document.getElementById('saved-dialog-panel');
 const savedDialogSubtitle = document.getElementById('saved-dialog-subtitle');
 const savedDialogClose = document.getElementById('saved-dialog-close');
 const savedTabs = document.getElementById('saved-tabs');
+const savedTabsIndicator = document.getElementById('saved-tabs-indicator');
 const savedFiltersToggle = document.getElementById('saved-filters-toggle');
 const savedFiltersIcon = document.getElementById('saved-filters-icon');
 const savedFiltersBadge = document.getElementById('saved-filters-badge');
@@ -420,6 +426,10 @@ function createVenueCardElement(place, depthIndex) {
     if (heroImg) {
       hydrateLazyPhoto(heroImg, { priority: 'high', fadeIn: false });
     }
+    const nextSlideImg = card.querySelector('.venue-slide[data-slide-idx="1"] .venue-photo');
+    if (nextSlideImg) {
+      hydrateLazyPhoto(nextSlideImg, { priority: 'low', fadeIn: false });
+    }
   }
 
   const mapsLink = card.querySelector('.open-maps-btn');
@@ -488,6 +498,10 @@ function handleCardCommitted(direction) {
           item.el.querySelector('.venue-photo');
         if (activeImg) {
           hydrateLazyPhoto(activeImg, { priority: 'high', fadeIn: false });
+        }
+        const nextSlideImg = item.el.querySelector('.venue-slide[data-slide-idx="1"] .venue-photo');
+        if (nextSlideImg) {
+          hydrateLazyPhoto(nextSlideImg, { priority: 'low', fadeIn: false });
         }
       }
     });
@@ -1439,7 +1453,7 @@ async function ensureSavedPlacesHydrated() {
   }
 }
 
-function renderSavedPlacesList() {
+function renderSavedPlacesList({ transitionDelta = null } = {}) {
   const nowMs = Date.now();
   const allSaved = storage.getSavedPlaces();
   const tabMatched =
@@ -1491,6 +1505,9 @@ function renderSavedPlacesList() {
         </span>
       </div>
     `;
+    if (transitionDelta !== null && savedListEl.firstElementChild) {
+      animateSavedCategoryTransition(savedListEl.firstElementChild, transitionDelta);
+    }
     return;
   }
 
@@ -1504,6 +1521,9 @@ function renderSavedPlacesList() {
       </div>
     `;
     bindAllTactileButtons(savedListEl);
+    if (transitionDelta !== null && savedListEl.firstElementChild) {
+      animateSavedCategoryTransition(savedListEl.firstElementChild, transitionDelta);
+    }
     return;
   }
 
@@ -1630,6 +1650,10 @@ function renderSavedPlacesList() {
 
   savedListEl.innerHTML = `<ul class="saved-cards" role="list">${itemsHtml}</ul>`;
 
+  if (transitionDelta !== null && savedListEl.firstElementChild) {
+    animateSavedCategoryTransition(savedListEl.firstElementChild, transitionDelta);
+  }
+
   if (savedThumbObserver) {
     savedThumbObserver.disconnect();
   }
@@ -1671,11 +1695,19 @@ function renderSavedPlacesList() {
 
 syncSavedFilterControls();
 
+const SAVED_STATUS_FILTERS = ['all', 'favorite', 'interested'];
+
 savedTriggerBtn.addEventListener('click', () => {
   syncSavedFilterControls();
   renderSavedPlacesList();
   openDialogAnimated(savedDialog, savedDialogPanel);
   ensureSavedPlacesHydrated();
+  const activeTab =
+    savedTabs.querySelector(`.saved-tab[data-saved-filter="${savedFilter}"]`) ||
+    savedTabs.querySelector('.saved-tab.is-active');
+  if (activeTab) {
+    syncSavedTabsIndicator(savedTabsIndicator, savedTabs, activeTab, false);
+  }
 });
 
 savedDialogClose.addEventListener('click', () => {
@@ -1685,13 +1717,41 @@ savedDialogClose.addEventListener('click', () => {
 savedTabs.addEventListener('click', (e) => {
   const tab = e.target.closest('[data-saved-filter]');
   if (!tab) return;
-  savedFilter = tab.dataset.savedFilter || 'all';
+  const targetFilter = tab.dataset.savedFilter || 'all';
+  if (targetFilter === savedFilter) return;
+
+  const prevIdx = SAVED_STATUS_FILTERS.indexOf(savedFilter);
+  const nextIdx = SAVED_STATUS_FILTERS.indexOf(targetFilter);
+  const delta = prevIdx !== -1 && nextIdx !== -1 ? nextIdx - prevIdx : 1;
+  savedFilter = targetFilter;
+
   savedTabs.querySelectorAll('.saved-tab').forEach((btn) => {
     const active = btn === tab;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
-  renderSavedPlacesList();
+
+  syncSavedTabsIndicator(savedTabsIndicator, savedTabs, tab, true);
+  utils.remove(tab);
+  animate(tab, {
+    scale: [0.94, 1],
+    duration: 180,
+    ease: EASE_UI_OUT,
+  });
+  triggerHaptic('tap');
+  savedListEl.scrollTop = 0;
+  renderSavedPlacesList({ transitionDelta: delta });
+});
+
+window.addEventListener('resize', () => {
+  if (savedDialog.open) {
+    const activeTab =
+      savedTabs.querySelector(`.saved-tab[data-saved-filter="${savedFilter}"]`) ||
+      savedTabs.querySelector('.saved-tab.is-active');
+    if (activeTab) {
+      syncSavedTabsIndicator(savedTabsIndicator, savedTabs, activeTab, false);
+    }
+  }
 });
 
 savedFiltersToggle.addEventListener('click', () => {
