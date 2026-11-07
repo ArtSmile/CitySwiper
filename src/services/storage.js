@@ -126,6 +126,9 @@ class StorageService {
         location: place.location || null,
         cityCenter: place.cityCenter || null,
         distanceKm: typeof place.distanceKm === 'number' ? place.distanceKm : null,
+        reservable: Boolean(place.reservable),
+        reservationUrl: place.reservationUrl || null,
+        websiteUri: place.websiteUri || null,
         city: cityMeta?.city || '',
         country: cityMeta?.country || '',
         status: direction === 'up' ? 'favorite' : 'interested',
@@ -159,6 +162,12 @@ class StorageService {
         openingHours: extra.openingHours ?? item.openingHours ?? null,
         openNow:
           typeof extra.openNow === 'boolean' ? extra.openNow : item.openNow ?? null,
+        reservable:
+          typeof extra.reservable === 'boolean'
+            ? extra.reservable
+            : item.reservable ?? false,
+        reservationUrl: extra.reservationUrl ?? item.reservationUrl ?? null,
+        websiteUri: extra.websiteUri ?? item.websiteUri ?? null,
       };
     });
 

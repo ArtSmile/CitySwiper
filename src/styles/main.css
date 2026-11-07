@@ -699,53 +699,55 @@ select {
   }
 }
 
-/* Flat, low-emphasis "Open in Maps" secondary action */
-.open-maps-btn {
+/* Card Action Buttons Row: Open in Maps & Find a table */
+.venue-actions-row {
   margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.venue-action-btn,
+.open-maps-btn {
   min-height: 46px;
-  padding: 0 14px;
+  padding: 0 12px;
   border-radius: 14px;
   background: rgba(15, 23, 42, 0.04);
   border: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow: none;
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 580;
   letter-spacing: -0.005em;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.open-maps-lead {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 7px;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
 }
 
-.open-maps-lead svg {
-  width: 17px;
-  height: 17px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
-.open-maps-arrow {
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
-  opacity: 0.8;
+.venue-action-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.open-maps-arrow svg {
-  width: 15px;
-  height: 15px;
+.venue-action-icon svg {
+  width: 17px;
+  height: 17px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.venue-action-btn span:not(.venue-action-icon) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Bottom 4-Way Floating Pearl Action Dock */
@@ -2077,13 +2079,15 @@ dialog::backdrop {
     outline-color: rgba(20, 34, 66, 0.14);
   }
 
+  .venue-action-btn:hover,
   .open-maps-btn:hover {
     background: rgba(15, 23, 42, 0.065);
     border-color: rgba(15, 23, 42, 0.1);
     color: var(--text-primary);
   }
 
-  .saved-maps-btn:hover {
+  .saved-maps-btn:hover,
+  .saved-table-btn:hover {
     color: var(--accent-primary);
     background: rgba(37, 99, 235, 0.08);
     border-color: rgba(37, 99, 235, 0.22);
@@ -2140,6 +2144,7 @@ dialog::backdrop {
     outline-color: #cbd5e1;
   }
 
+  .venue-action-btn,
   .open-maps-btn {
     background: #f3f5f9;
   }
@@ -2153,6 +2158,7 @@ dialog::backdrop {
 
 /* Reinforce low-contrast boundaries when user explicitly requests higher contrast */
 @media (prefers-contrast: more) {
+  .venue-action-btn,
   .open-maps-btn,
   .saved-icon-btn {
     border-color: rgba(15, 23, 42, 0.28);
@@ -2172,6 +2178,7 @@ dialog::backdrop {
   .dock-btn,
   .sheet-panel,
   .state-card,
+  .venue-action-btn,
   .open-maps-btn,
   .saved-item,
   .saved-icon-btn,

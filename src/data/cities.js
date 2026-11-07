@@ -1916,6 +1916,7 @@ export function buildDemoPlacesForCity(cityMeta) {
       distanceKm: 0.5,
       periods: buildDailyPeriods(12, 0, 23, 30),
       seed: `${slug}-restaurant-fire-dining`,
+      reservable: true,
     },
     {
       suffix: 'velvet-Highball',
@@ -1964,6 +1965,7 @@ export function buildDemoPlacesForCity(cityMeta) {
       distanceKm: 2.8,
       periods: buildDailyPeriods(12, 0, 22, 30),
       seed: `${slug}-seafood-bistro-dinner`,
+      reservable: true,
     },
     {
       suffix: 'natural-wine',
@@ -2053,6 +2055,10 @@ export function buildDemoPlacesForCity(cityMeta) {
         utcOffsetMinutes: null,
       },
       mapsUrl: `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`,
+      reservable: Boolean(spot.reservable),
+      reservationUrl: spot.reservable
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.name + ' table reservation')}`
+        : null,
     };
   });
 }

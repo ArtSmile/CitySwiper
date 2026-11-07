@@ -29,6 +29,8 @@ const DISCOVER_FIELD_MASK = [
   'places.utcOffsetMinutes',
   'places.regularOpeningHours.openNow',
   'places.regularOpeningHours.periods',
+  'places.reservable',
+  'places.websiteUri',
   'nextPageToken',
 ].join(',');
 
@@ -37,6 +39,8 @@ const HYDRATE_FIELD_MASK = [
   'utcOffsetMinutes',
   'regularOpeningHours.openNow',
   'regularOpeningHours.periods',
+  'reservable',
+  'websiteUri',
 ].join(',');
 
 const CATEGORY_CONFIG = {
@@ -361,6 +365,11 @@ function normalizePlace(place, fallbackCategory, cityCenterLocation = null) {
     place.regularOpeningHours,
     place.utcOffsetMinutes,
   );
+  const reservable = Boolean(place.reservable);
+  const websiteUri = place.websiteUri || null;
+  const reservationUrl =
+    websiteUri ||
+    `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(place.id)}`;
 
   return {
     placeId: place.id,
@@ -388,6 +397,9 @@ function normalizePlace(place, fallbackCategory, cityCenterLocation = null) {
     cityCenter,
     distanceKm,
     mapsUrl: universalMapsUrl,
+    reservable,
+    websiteUri,
+    reservationUrl,
   };
 }
 
@@ -677,6 +689,12 @@ export async function hydrateSavedPlaces(items) {
       );
       const distanceKm = computeDistanceKm(cityCenter, location);
 
+      const reservable = Boolean(details.reservable);
+      const websiteUri = details.websiteUri || null;
+      const reservationUrl =
+        websiteUri ||
+        `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(placeId)}`;
+
       hydrated[placeId] = {
         location,
         cityCenter,
@@ -686,6 +704,9 @@ export async function hydrateSavedPlaces(items) {
           typeof details.regularOpeningHours?.openNow === 'boolean'
             ? details.regularOpeningHours.openNow
             : null,
+        reservable,
+        websiteUri,
+        reservationUrl,
       };
     }),
   );

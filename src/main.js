@@ -389,19 +389,34 @@ function createVenueCardElement(place, depthIndex) {
           ${ICONS.mapPin}
           <span>${escapeHtml(place.address)}</span>
         </p>
-        <a
-          class="open-maps-btn tactile-link"
-          href="${escapeHtml(place.mapsUrl)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-no-drag="true"
-        >
-          <span class="open-maps-lead">
-            ${ICONS.externalMaps}
+        <div class="venue-actions-row">
+          <a
+            class="venue-action-btn open-maps-btn tactile-link"
+            href="${escapeHtml(place.mapsUrl)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-no-drag="true"
+            aria-label="Открыть ${escapeHtml(place.name)} в Google Maps"
+          >
+            <span class="venue-action-icon">${ICONS.externalMaps}</span>
             <span>Open in Maps</span>
-          </span>
-          <span class="open-maps-arrow">${ICONS.arrowUpRight}</span>
-        </a>
+          </a>
+          ${
+            place.reservable
+              ? `<a
+                  class="venue-action-btn find-table-btn tactile-link"
+                  href="${escapeHtml(place.reservationUrl || place.mapsUrl)}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-no-drag="true"
+                  aria-label="Забронировать столик в ${escapeHtml(place.name)}"
+                >
+                  <span class="venue-action-icon">${ICONS.utensils}</span>
+                  <span>Find a table</span>
+                </a>`
+              : ''
+          }
+        </div>
       </div>
     </div>
   `;
@@ -432,8 +447,9 @@ function createVenueCardElement(place, depthIndex) {
     }
   }
 
-  const mapsLink = card.querySelector('.open-maps-btn');
-  bindTactileButton(mapsLink, 0.985);
+  card.querySelectorAll('.venue-action-btn').forEach((btn) => {
+    bindTactileButton(btn, 0.985);
+  });
 
   return card;
 }
@@ -1630,9 +1646,24 @@ function renderSavedPlacesList({ transitionDelta = null } = {}) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Открыть ${escapeHtml(item.name)} на карте"
+              title="Open in Maps"
             >
               ${ICONS.externalMaps}
             </a>
+            ${
+              item.reservable
+                ? `<a
+                    class="saved-icon-btn saved-table-btn tactile-link"
+                    href="${escapeHtml(item.reservationUrl || item.mapsUrl)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Забронировать столик в ${escapeHtml(item.name)}"
+                    title="Find a table"
+                  >
+                    ${ICONS.utensils}
+                  </a>`
+                : ''
+            }
             <button
               type="button"
               class="saved-icon-btn saved-remove-btn"
