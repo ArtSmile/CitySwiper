@@ -105,15 +105,15 @@ body {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 430px;
+  max-width: 440px;
   height: 100dvh;
   margin: 0 auto;
-  padding-top: max(10px, env(safe-area-inset-top, 0px));
-  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
   padding-inline: 16px;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 12px;
 }
 
 /* Controls baseline */
@@ -155,16 +155,16 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 48px;
+  min-height: 52px;
 }
 
 .city-pill-btn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 46px;
-  max-width: calc(100% - 76px);
-  padding: 5px 14px 5px 8px;
+  min-height: 50px;
+  max-width: calc(100% - 80px);
+  padding: 6px 16px 6px 10px;
   border-radius: var(--radius-pill);
   background: var(--surface-glass);
   backdrop-filter: blur(22px) saturate(180%);
@@ -177,8 +177,8 @@ select {
 }
 
 .city-pill-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--accent-primary-soft);
   color: var(--accent-primary);
@@ -189,8 +189,8 @@ select {
 }
 
 .city-pill-icon svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .city-pill-text {
@@ -200,15 +200,15 @@ select {
 }
 
 .city-pill-eyebrow {
-  font-size: 0.68rem;
-  font-weight: 500;
-  line-height: 1.12;
+  font-size: 0.74rem;
+  font-weight: 550;
+  line-height: 1.15;
   color: var(--text-muted);
 }
 
 .city-pill-name {
-  font-size: 0.92rem;
-  font-weight: 660;
+  font-size: 1rem;
+  font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.015em;
   color: var(--text-primary);
@@ -218,8 +218,8 @@ select {
 }
 
 .city-pill-chevron {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   color: var(--text-muted);
   display: inline-flex;
   flex-shrink: 0;
@@ -229,10 +229,10 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 64px;
-  min-height: 46px;
-  padding: 0 14px;
+  gap: 7px;
+  min-width: 68px;
+  min-height: 50px;
+  padding: 0 16px;
   border-radius: var(--radius-pill);
   background: var(--surface-glass);
   backdrop-filter: blur(22px) saturate(180%);
@@ -244,15 +244,15 @@ select {
 }
 
 .saved-pill-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   color: var(--swipe-up);
   display: inline-flex;
 }
 
 .saved-pill-count {
-  font-size: 0.88rem;
-  font-weight: 680;
+  font-size: 0.98rem;
+  font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
@@ -261,8 +261,8 @@ select {
 .category-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-  padding: 4px;
+  gap: 5px;
+  padding: 5px;
   border-radius: var(--radius-pill);
   background: var(--surface-track);
   backdrop-filter: blur(18px) saturate(170%);
@@ -274,11 +274,11 @@ select {
 }
 
 .category-chip {
-  min-height: 36px;
-  padding: 0 6px;
+  min-height: 40px;
+  padding: 0 8px;
   border-radius: var(--radius-pill);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.86rem;
+  font-weight: 620;
   color: var(--text-secondary);
   white-space: nowrap;
 }
@@ -286,7 +286,7 @@ select {
 .category-chip.is-active {
   background: #ffffff;
   color: var(--text-primary);
-  font-weight: 660;
+  font-weight: 680;
   box-shadow:
     0 1px 2px rgba(20, 34, 66, 0.05),
     0 4px 12px -2px rgba(24, 42, 84, 0.08);
@@ -310,7 +310,11 @@ select {
 
 .venue-card {
   position: absolute;
-  inset: 2px 0 10px 0;
+  inset: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  max-height: min(100% - 4px, 540px);
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
@@ -333,7 +337,7 @@ select {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 8px;
+  padding: 10px;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: linear-gradient(180deg var(--in-oklab), #ffffff 0%, #fafcff 100%);
@@ -348,8 +352,8 @@ select {
 
 .venue-media {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 150px;
+  flex: 1 1 0;
+  min-height: 0;
   border-radius: var(--radius-media);
   background: linear-gradient(155deg var(--in-oklab), #e9effa 0%, #dde6f6 100%);
   overflow: hidden;
@@ -489,18 +493,18 @@ select {
 .venue-type-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   min-width: 0;
-  max-width: calc(100% - 104px);
-  padding: 6px 12px;
+  max-width: calc(100% - 110px);
+  padding: 7px 14px;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.96);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.09);
-  font-size: 0.75rem;
-  font-weight: 640;
+  font-size: 0.84rem;
+  font-weight: 660;
   color: var(--text-primary);
 }
 
@@ -512,8 +516,8 @@ select {
 }
 
 .venue-type-badge svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   color: var(--accent-primary);
   flex-shrink: 0;
 }
@@ -521,23 +525,23 @@ select {
 .venue-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   flex-shrink: 0;
-  padding: 6px 11px;
+  padding: 7px 13px;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.96);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.09);
-  font-size: 0.72rem;
-  font-weight: 640;
+  font-size: 0.82rem;
+  font-weight: 660;
   color: var(--text-primary);
 }
 
 .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--swipe-right);
 }
@@ -611,17 +615,17 @@ select {
   position: relative;
   z-index: 3;
   flex: 0 0 auto;
-  padding: 14px 10px 6px;
+  padding: 14px 12px 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
 }
 
 .venue-title {
   margin: 0;
-  font-size: clamp(1.22rem, 4.9vw, 1.46rem);
-  font-weight: 720;
-  line-height: 1.16;
+  font-size: clamp(1.32rem, 5.2vw, 1.58rem);
+  font-weight: 760;
+  line-height: 1.18;
   letter-spacing: -0.022em;
   color: var(--text-primary);
   display: -webkit-box;
@@ -634,49 +638,49 @@ select {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-variant-numeric: tabular-nums;
 }
 
 .metric-chip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
+  gap: 6px;
+  padding: 5px 12px;
   border-radius: var(--radius-pill);
   background: var(--surface-subtle);
   border: 1px solid rgba(20, 34, 66, 0.055);
-  font-size: 0.79rem;
-  font-weight: 650;
+  font-size: 0.86rem;
+  font-weight: 660;
   color: var(--text-primary);
 }
 
 .metric-chip svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   color: #f59e0b;
 }
 
 .metric-sub {
   color: var(--text-muted);
-  font-weight: 520;
+  font-weight: 540;
 }
 
 .venue-address {
   margin: 0;
   display: flex;
   align-items: flex-start;
-  gap: 6px;
-  font-size: 0.83rem;
-  line-height: 1.35;
+  gap: 7px;
+  font-size: 0.88rem;
+  line-height: 1.38;
   color: var(--text-secondary);
 }
 
 .venue-address svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
   color: var(--accent-primary);
 }
 
@@ -698,15 +702,15 @@ select {
 /* Flat, low-emphasis "Open in Maps" secondary action */
 .open-maps-btn {
   margin-top: 2px;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.035);
-  border: 1px solid rgba(15, 23, 42, 0.055);
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow: none;
   color: var(--text-secondary);
-  font-size: 0.8rem;
-  font-weight: 540;
+  font-size: 0.88rem;
+  font-weight: 580;
   letter-spacing: -0.005em;
   text-decoration: none;
   display: flex;
@@ -718,12 +722,12 @@ select {
 .open-maps-lead {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .open-maps-lead svg {
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
   color: var(--text-muted);
   flex-shrink: 0;
 }
@@ -732,7 +736,7 @@ select {
   width: 16px;
   height: 16px;
   color: var(--text-muted);
-  opacity: 0.76;
+  opacity: 0.8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -740,15 +744,15 @@ select {
 }
 
 .open-maps-arrow svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
 }
 
 /* Bottom 4-Way Floating Pearl Action Dock */
 .action-dock {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 10px;
   padding: 2px 4px 0;
 }
 
@@ -756,14 +760,14 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .dock-btn {
-  width: 56px;
-  height: 56px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--border-glass);
@@ -777,8 +781,8 @@ select {
 }
 
 .dock-btn-icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
 }
 
@@ -815,8 +819,8 @@ select {
 }
 
 .dock-label {
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 620;
   color: var(--text-muted);
   letter-spacing: 0.005em;
   white-space: nowrap;
@@ -1043,16 +1047,16 @@ dialog::backdrop {
 
 .sheet-title {
   margin: 0;
-  font-size: 1.28rem;
-  font-weight: 730;
+  font-size: 1.35rem;
+  font-weight: 760;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
 .sheet-subtitle {
   margin: 4px 0 0;
-  font-size: 0.84rem;
-  line-height: 1.42;
+  font-size: 0.9rem;
+  line-height: 1.45;
   color: var(--text-secondary);
 }
 
@@ -1086,26 +1090,26 @@ dialog::backdrop {
 }
 
 .section-micro-label {
-  font-size: 0.76rem;
-  font-weight: 630;
+  font-size: 0.82rem;
+  font-weight: 650;
   color: var(--text-muted);
 }
 
 .quick-picks-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
 }
 
 .quick-pick-chip,
 .city-suggest-chip {
-  min-height: 38px;
-  padding: 0 13px;
+  min-height: 40px;
+  padding: 0 15px;
   border-radius: var(--radius-pill);
   background: var(--surface-subtle);
   border: 1px solid rgba(20, 34, 66, 0.08);
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 620;
   color: var(--text-primary);
 }
 
@@ -1130,8 +1134,8 @@ dialog::backdrop {
 }
 
 .form-label {
-  font-size: 0.84rem;
-  font-weight: 650;
+  font-size: 0.92rem;
+  font-weight: 660;
   color: var(--text-primary);
 }
 
@@ -1155,18 +1159,18 @@ dialog::backdrop {
 
 .form-input {
   width: 100%;
-  min-height: 48px;
-  padding: 0 14px;
+  min-height: 52px;
+  padding: 0 16px;
   border-radius: var(--radius-control);
   background: #f6f9fe;
   border: 1px solid var(--border-control);
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 1.02rem;
 }
 
 .combo-input {
-  padding-inline-end: 46px;
+  padding-inline-end: 48px;
 }
 
 .form-input::placeholder {
@@ -1500,20 +1504,20 @@ dialog::backdrop {
 }
 
 .saved-filter-chip {
-  min-height: 34px;
-  padding: 0 11px;
+  min-height: 38px;
+  padding: 0 13px;
   border-radius: var(--radius-pill);
   background: #ffffff;
   border: 1px solid rgba(20, 34, 66, 0.075);
   color: var(--text-secondary);
-  font-size: 0.77rem;
-  font-weight: 600;
+  font-size: 0.84rem;
+  font-weight: 620;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .saved-filter-chip.is-active {
@@ -1686,9 +1690,9 @@ dialog::backdrop {
   container-type: inline-size;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  row-gap: 3px;
-  padding: 10px 12px;
-  border-radius: 18px;
+  row-gap: 4px;
+  padding: 12px 14px;
+  border-radius: 20px;
   background: #f8faff;
   border: 1px solid rgba(20, 34, 66, 0.068);
 }
@@ -1697,11 +1701,11 @@ dialog::backdrop {
   grid-column: 1;
   grid-row: 1 / 3;
   align-self: center;
-  width: 76px;
-  height: 76px;
+  width: 82px;
+  height: 82px;
   aspect-ratio: 1;
-  margin-inline-end: 12px;
-  border-radius: 13px;
+  margin-inline-end: 14px;
+  border-radius: 16px;
   object-fit: cover;
   background: var(--surface-card-inner);
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
@@ -1734,9 +1738,9 @@ dialog::backdrop {
 
 .saved-name {
   margin: 0;
-  font-size: 0.92rem;
-  font-weight: 680;
-  line-height: 1.24;
+  font-size: 1.02rem;
+  font-weight: 720;
+  line-height: 1.25;
   letter-spacing: -0.012em;
   color: var(--text-primary);
   display: -webkit-box;
@@ -1788,7 +1792,7 @@ dialog::backdrop {
 }
 
 .saved-primary-meta {
-  font-size: 0.77rem;
+  font-size: 0.84rem;
   color: var(--text-secondary);
   overflow: hidden;
 }
@@ -1834,7 +1838,7 @@ dialog::backdrop {
 }
 
 .saved-hours-row {
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   overflow: hidden;
 }
@@ -1871,7 +1875,7 @@ dialog::backdrop {
 }
 
 .saved-location-row {
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 
