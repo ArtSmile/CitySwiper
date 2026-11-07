@@ -39,6 +39,7 @@ import {
   formatTodayHoursSummary,
 } from './utils/placeFilters.js';
 import { createReactiveBackground } from './webgl/background.js';
+import { triggerHaptic } from './utils/haptics.js';
 
 const VISIBLE_STACK_LIMIT = 3;
 
@@ -156,6 +157,9 @@ function warmNextCardCoverPhoto() {
 }
 
 const physics = new CardPhysicsController({
+  onCardGrab() {
+    triggerHaptic('grab');
+  },
   onDragProgress({ nx, ny, direction, intensity, progress, committed }) {
     if (!committed) {
       if (progress > 0.015) {
@@ -383,6 +387,7 @@ function renderInitialStack() {
 }
 
 function handleCardCommitted(direction) {
+  triggerHaptic(`swipe-${direction}`);
   const swipedItem = mountedCards.shift();
   if (swipedItem) {
     swipedItem.el.style.zIndex = '45';

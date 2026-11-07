@@ -15,10 +15,11 @@ const PPM = 100; // 100 CSS pixels = 1 meter in Planck.js
  *   carry live velocity seamlessly with zero seam.
  */
 export class CardPhysicsController {
-  constructor({ onDragProgress, onSwipeCommit, onCardTap }) {
+  constructor({ onDragProgress, onSwipeCommit, onCardTap, onCardGrab }) {
     this.onDragProgress = onDragProgress;
     this.onSwipeCommit = onSwipeCommit;
     this.onCardTap = onCardTap;
+    this.onCardGrab = onCardGrab;
 
     this.world = new World(new Vec2(0, 0));
     this.groundBody = this.world.createBody();
@@ -106,6 +107,7 @@ export class CardPhysicsController {
       state.maxTravel = 0;
       state.mode = 'dragging';
       cardEl.classList.add('is-dragging');
+      this.onCardGrab?.();
 
       try {
         cardEl.setPointerCapture(e.pointerId);
