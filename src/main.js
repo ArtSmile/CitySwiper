@@ -119,10 +119,10 @@ countryToggleIcon.innerHTML = ICONS.chevronDown;
 cityToggleIcon.innerHTML = ICONS.chevronDown;
 cityDialogClose.innerHTML = ICONS.close;
 savedDialogClose.innerHTML = ICONS.close;
-savedFiltersIcon.innerHTML = ICONS.sliders;
-savedFiltersChevron.innerHTML = ICONS.chevronDown;
-const savedChevronSvg = savedFiltersChevron.querySelector('svg') || savedFiltersChevron;
-savedChevronSvg.style.transform = 'rotate(180deg)';
+savedFiltersIcon.innerHTML = ICONS.filter;
+if (savedFiltersChevron) {
+  savedFiltersChevron.innerHTML = ICONS.chevronDown;
+}
 document.querySelectorAll('[data-icon-slot]').forEach((slot) => {
   const key = slot.dataset.iconSlot;
   if (ICONS[key]) slot.innerHTML = ICONS[key];
@@ -137,7 +137,7 @@ let savedFilter = 'all';
 let savedTypeFilter = 'all';
 let savedHoursFilter = 'any';
 let savedMaxDistanceKm = MAX_DISTANCE_SLIDER_VAL;
-let savedFiltersExpanded = true;
+let savedFiltersExpanded = false;
 let hydrateSavedInFlight = false;
 let savedThumbObserver = null;
 let session = null;
@@ -1379,8 +1379,11 @@ function syncSavedDistanceSlider() {
 function syncSavedFilterControls() {
   const activeCount = getActiveSavedFiltersCount();
   savedFiltersBadge.hidden = activeCount === 0;
-  savedFiltersBadge.textContent = String(activeCount);
+  savedFiltersBadge.textContent = '';
   savedFiltersReset.hidden = activeCount === 0;
+
+  savedFiltersToggle.classList.toggle('is-active', savedFiltersExpanded);
+  savedFiltersToggle.setAttribute('aria-expanded', savedFiltersExpanded ? 'true' : 'false');
 
   savedTypeChips.querySelectorAll('[data-saved-type]').forEach((btn) => {
     const active = btn.dataset.savedType === savedTypeFilter;
@@ -1693,10 +1696,11 @@ savedTabs.addEventListener('click', (e) => {
 
 savedFiltersToggle.addEventListener('click', () => {
   savedFiltersExpanded = !savedFiltersExpanded;
+  savedFiltersToggle.classList.toggle('is-active', savedFiltersExpanded);
   savedFiltersToggle.setAttribute('aria-expanded', savedFiltersExpanded ? 'true' : 'false');
   animateFilterPanelState(
     savedFiltersPanel,
-    savedChevronSvg,
+    null,
     savedFiltersExpanded,
     () => !savedFiltersExpanded,
   );

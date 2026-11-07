@@ -264,59 +264,60 @@
           ></button>
         </div>
 
-        <div class="saved-tabs" id="saved-tabs" role="group" aria-label="Статус в подборке">
+        <div class="saved-tabs-row">
+          <div class="saved-tabs" id="saved-tabs" role="group" aria-label="Статус в подборке">
+            <button
+              type="button"
+              class="saved-tab is-active"
+              data-saved-filter="all"
+              aria-pressed="true"
+            >
+              Все
+            </button>
+            <button
+              type="button"
+              class="saved-tab"
+              data-saved-filter="favorite"
+              aria-pressed="false"
+            >
+              Избранное ★
+            </button>
+            <button
+              type="button"
+              class="saved-tab"
+              data-saved-filter="interested"
+              aria-pressed="false"
+            >
+              Хочу ♥
+            </button>
+          </div>
+
           <button
             type="button"
-            class="saved-tab is-active"
-            data-saved-filter="all"
-            aria-pressed="true"
+            class="icon-filter-btn"
+            id="saved-filters-toggle"
+            aria-expanded="false"
+            aria-controls="saved-filters-panel"
+            aria-label="Фильтры"
           >
-            Все
-          </button>
-          <button
-            type="button"
-            class="saved-tab"
-            data-saved-filter="favorite"
-            aria-pressed="false"
-          >
-            Избранное ★
-          </button>
-          <button
-            type="button"
-            class="saved-tab"
-            data-saved-filter="interested"
-            aria-pressed="false"
-          >
-            Хочу ♥
+            <span class="icon-filter-svg" id="saved-filters-icon"></span>
+            <span class="filter-indicator-dot" id="saved-filters-badge" hidden></span>
           </button>
         </div>
 
         <section class="saved-filters-shell" aria-label="Фильтры подборки">
-          <div class="saved-filters-bar">
-            <button
-              type="button"
-              class="saved-filters-toggle"
-              id="saved-filters-toggle"
-              aria-expanded="true"
-              aria-controls="saved-filters-panel"
-            >
-              <span class="saved-filters-toggle-icon" id="saved-filters-icon"></span>
-              <span>Фильтры</span>
-              <span class="saved-filters-badge" id="saved-filters-badge" hidden>0</span>
-              <span class="saved-filters-chevron" id="saved-filters-chevron"></span>
-            </button>
-
-            <button
-              type="button"
-              class="saved-filters-reset"
-              id="saved-filters-reset"
-              hidden
-            >
-              Сбросить
-            </button>
-          </div>
-
-          <div class="saved-filters-panel" id="saved-filters-panel">
+          <div class="saved-filters-panel" id="saved-filters-panel" hidden>
+            <div class="saved-panel-header">
+              <span class="saved-panel-title">Фильтры</span>
+              <button
+                type="button"
+                class="saved-filters-reset"
+                id="saved-filters-reset"
+                hidden
+              >
+                Сбросить
+              </button>
+            </div>
             <div class="saved-filter-group" role="group" aria-labelledby="filter-type-label">
               <span class="saved-filter-label" id="filter-type-label">Тип заведения</span>
               <div class="saved-filter-chips saved-filter-chips--wrap" id="saved-type-chips">
