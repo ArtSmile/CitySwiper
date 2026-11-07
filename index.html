@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#f4f7fc" />
+    <meta name="color-scheme" content="light" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%23eef3fc'/%3E%3Cpath d='M16 6a7 7 0 0 1 7 7c0 5-7 13-7 13S9 18 9 13a7 7 0 0 1 7-7Zm0 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z' fill='%232563eb'/%3E%3C/svg%3E"
+    />
+    <title>City Swiper · Рестораны, бары и кафе города</title>
+    <script type="module" crossorigin src="./assets/index-D8Tz4fjh.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C09rQQz4.css">
+  </head>
+  <body>
+    <main class="app-shell" id="app-shell">
+      <header class="top-bar">
+        <button
+          type="button"
+          class="city-pill-btn"
+          id="city-trigger-btn"
+          aria-label="Выбрать страну и город"
+        >
+          <span class="city-pill-icon" id="city-pill-icon"></span>
+          <span class="city-pill-text">
+            <span class="city-pill-eyebrow">Город поиска</span>
+            <span class="city-pill-name" id="current-city-label">Выбрать город</span>
+          </span>
+          <span class="city-pill-chevron" id="city-pill-chevron"></span>
+        </button>
+
+        <button
+          type="button"
+          class="saved-pill-btn"
+          id="saved-trigger-btn"
+          aria-label="Открыть сохранённые места и избранное"
+        >
+          <span class="saved-pill-icon" id="saved-pill-icon"></span>
+          <span class="saved-pill-count" id="saved-count-badge">0</span>
+        </button>
+      </header>
+
+      <nav class="category-bar" id="category-bar" aria-label="Фильтр заведений">
+        <button type="button" class="category-chip is-active" data-category="all">
+          Все места
+        </button>
+        <button type="button" class="category-chip" data-category="restaurant">
+          Рестораны
+        </button>
+        <button type="button" class="category-chip" data-category="bar">
+          Бары
+        </button>
+        <button type="button" class="category-chip" data-category="cafe">
+          Кафе
+        </button>
+      </nav>
+
+      <section class="deck-stage" id="deck-stage" aria-live="polite" aria-label="Колода заведений">
+        <!-- Cards, loading skeleton, or API state render here -->
+      </section>
+
+      <footer class="action-dock" id="action-dock" aria-label="Действия с карточкой">
+        <div class="dock-item">
+          <button
+            type="button"
+            class="dock-btn dock-btn--left"
+            id="btn-swipe-left"
+            data-swipe-dir="left"
+            aria-label="Не моё, свайп влево"
+          >
+            <span class="dock-btn-icon" data-icon-slot="close"></span>
+          </button>
+          <span class="dock-label">Не моё</span>
+        </div>
+
+        <div class="dock-item">
+          <button
+            type="button"
+            class="dock-btn dock-btn--down"
+            id="btn-swipe-down"
+            data-swipe-dir="down"
+            aria-label="Уже бывал, свайп вниз"
+          >
+            <span class="dock-btn-icon" data-icon-slot="skipDown"></span>
+          </button>
+          <span class="dock-label">Уже бывал</span>
+        </div>
+
+        <div class="dock-item">
+          <button
+            type="button"
+            class="dock-btn dock-btn--up"
+            id="btn-swipe-up"
+            data-swipe-dir="up"
+            aria-label="В избранное, свайп вверх"
+          >
+            <span class="dock-btn-icon" data-icon-slot="star"></span>
+          </button>
+          <span class="dock-label">Избранное</span>
+        </div>
+
+        <div class="dock-item">
+          <button
+            type="button"
+            class="dock-btn dock-btn--right"
+            id="btn-swipe-right"
+            data-swipe-dir="right"
+            aria-label="Хочу, свайп вправо"
+          >
+            <span class="dock-btn-icon" data-icon-slot="heart"></span>
+          </button>
+          <span class="dock-label">Хочу</span>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Native modal <dialog> for Country & City Selection -->
+    <dialog id="city-dialog" class="sheet-dialog" aria-labelledby="city-dialog-title">
+      <div class="sheet-panel" id="city-dialog-panel">
+        <div class="sheet-header">
+          <div>
+            <h2 class="sheet-title" id="city-dialog-title">Куда отправимся?</h2>
+            <p class="sheet-subtitle">
+              Выберите страну и город, и мы соберём живые рестораны, бары и кафе в черте города.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="icon-close-btn"
+            id="city-dialog-close"
+            aria-label="Закрыть окно выбора города"
+            hidden
+          ></button>
+        </div>
+
+        <div class="quick-picks-block">
+          <span class="section-micro-label">Быстрый старт</span>
+          <div class="quick-picks-grid" id="quick-picks-grid"></div>
+        </div>
+
+        <form id="city-form" class="city-form" action="/discover" method="GET" novalidate>
+          <div class="form-group">
+            <label for="country-input" class="form-label">Страна</label>
+            <div class="combo-root" id="country-combo">
+              <div class="combo-control">
+                <input
+                  type="text"
+                  id="country-input"
+                  name="country"
+                  class="form-input combo-input"
+                  placeholder="Выберите страну"
+                  required
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded="false"
+                  aria-controls="country-listbox"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  enterkeyhint="next"
+                  aria-describedby="city-form-hint"
+                />
+                <button
+                  type="button"
+                  class="combo-toggle-btn"
+                  id="country-toggle-btn"
+                  tabindex="-1"
+                  aria-label="Открыть список стран"
+                >
+                  <span class="combo-toggle-icon" id="country-toggle-icon"></span>
+                </button>
+              </div>
+              <ul
+                class="combo-dropdown"
+                id="country-listbox"
+                role="listbox"
+                aria-label="Список стран"
+                hidden
+              ></ul>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="city-input" class="form-label">Город</label>
+            <div class="combo-root is-disabled" id="city-combo">
+              <div class="combo-control">
+                <input
+                  type="text"
+                  id="city-input"
+                  name="city"
+                  class="form-input combo-input"
+                  placeholder="Сначала выберите страну"
+                  required
+                  disabled
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded="false"
+                  aria-controls="city-listbox"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  enterkeyhint="done"
+                  aria-describedby="city-form-error"
+                />
+                <button
+                  type="button"
+                  class="combo-toggle-btn"
+                  id="city-toggle-btn"
+                  tabindex="-1"
+                  disabled
+                  aria-label="Открыть список городов"
+                >
+                  <span class="combo-toggle-icon" id="city-toggle-icon"></span>
+                </button>
+              </div>
+              <ul
+                class="combo-dropdown"
+                id="city-listbox"
+                role="listbox"
+                aria-label="Список городов"
+                hidden
+              ></ul>
+            </div>
+          </div>
+
+          <p class="form-hint" id="city-form-hint">
+            Просмотренные места сохраняются в браузере и больше не повторяются в выдаче.
+          </p>
+          <p class="form-error" id="city-form-error" aria-live="polite"></p>
+
+          <button type="submit" class="primary-submit-btn" id="city-submit-btn">
+            Показать заведения города
+          </button>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- Native modal <dialog> for Saved & Favorite Venues -->
+    <dialog
+      id="saved-dialog"
+      class="sheet-dialog"
+      closedby="any"
+      aria-labelledby="saved-dialog-title"
+    >
+      <div class="sheet-panel sheet-panel--tall" id="saved-dialog-panel">
+        <div class="sheet-header">
+          <div>
+            <h2 class="sheet-title" id="saved-dialog-title">Ваша подборка</h2>
+            <p class="sheet-subtitle" id="saved-dialog-subtitle">
+              Места со свайпом вправо и вверх
+            </p>
+          </div>
+          <button
+            type="button"
+            class="icon-close-btn"
+            id="saved-dialog-close"
+            aria-label="Закрыть подборку"
+          ></button>
+        </div>
+
+        <div class="saved-tabs" id="saved-tabs" role="group" aria-label="Статус в подборке">
+          <button
+            type="button"
+            class="saved-tab is-active"
+            data-saved-filter="all"
+            aria-pressed="true"
+          >
+            Все
+          </button>
+          <button
+            type="button"
+            class="saved-tab"
+            data-saved-filter="favorite"
+            aria-pressed="false"
+          >
+            Избранное ★
+          </button>
+          <button
+            type="button"
+            class="saved-tab"
+            data-saved-filter="interested"
+            aria-pressed="false"
+          >
+            Хочу ♥
+          </button>
+        </div>
+
+        <section class="saved-filters-shell" aria-label="Фильтры подборки">
+          <div class="saved-filters-bar">
+            <button
+              type="button"
+              class="saved-filters-toggle"
+              id="saved-filters-toggle"
+              aria-expanded="true"
+              aria-controls="saved-filters-panel"
+            >
+              <span class="saved-filters-toggle-icon" id="saved-filters-icon"></span>
+              <span>Фильтры</span>
+              <span class="saved-filters-badge" id="saved-filters-badge" hidden>0</span>
+              <span class="saved-filters-chevron" id="saved-filters-chevron"></span>
+            </button>
+
+            <button
+              type="button"
+              class="saved-filters-reset"
+              id="saved-filters-reset"
+              hidden
+            >
+              Сбросить
+            </button>
+          </div>
+
+          <div class="saved-filters-panel" id="saved-filters-panel">
+            <div class="saved-filter-group" role="group" aria-labelledby="filter-type-label">
+              <span class="saved-filter-label" id="filter-type-label">Тип заведения</span>
+              <div class="saved-filter-chips saved-filter-chips--wrap" id="saved-type-chips">
+                <button
+                  type="button"
+                  class="saved-filter-chip is-active"
+                  data-saved-type="all"
+                  aria-pressed="true"
+                >
+                  Все
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-type="restaurant"
+                  aria-pressed="false"
+                >
+                  Рестораны
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-type="bar"
+                  aria-pressed="false"
+                >
+                  Бары
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-type="cafe"
+                  aria-pressed="false"
+                >
+                  Кафе
+                </button>
+              </div>
+            </div>
+
+            <div class="saved-filter-group" role="group" aria-labelledby="filter-hours-label">
+              <span class="saved-filter-label" id="filter-hours-label">Часы работы</span>
+              <div class="saved-filter-chips saved-filter-chips--scroll" id="saved-hours-chips">
+                <button
+                  type="button"
+                  class="saved-filter-chip is-active"
+                  data-saved-hours="any"
+                  aria-pressed="true"
+                >
+                  Любые
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-hours="open_now"
+                  aria-pressed="false"
+                >
+                  <span class="filter-dot-open" aria-hidden="true"></span>
+                  <span>Открыто сейчас</span>
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-hours="morning"
+                  aria-pressed="false"
+                >
+                  Утро · 07-11
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-hours="day"
+                  aria-pressed="false"
+                >
+                  День · 12-17
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-hours="evening"
+                  aria-pressed="false"
+                >
+                  Вечер · 18-22
+                </button>
+                <button
+                  type="button"
+                  class="saved-filter-chip"
+                  data-saved-hours="late"
+                  aria-pressed="false"
+                >
+                  Ночь · 23+
+                </button>
+              </div>
+            </div>
+
+            <div class="saved-filter-group">
+              <div class="saved-range-header">
+                <label for="saved-distance-range" class="saved-filter-label">
+                  От центра города, км
+                </label>
+                <output
+                  id="saved-distance-output"
+                  for="saved-distance-range"
+                  class="saved-distance-output"
+                >
+                  Любое
+                </output>
+              </div>
+              <input
+                type="range"
+                id="saved-distance-range"
+                class="saved-range-input"
+                min="0.5"
+                max="15.5"
+                step="0.5"
+                value="15.5"
+                aria-valuetext="Любое расстояние"
+              />
+              <div class="saved-range-ticks" aria-hidden="true">
+                <span>0,5 км</span>
+                <span>5 км</span>
+                <span>10 км</span>
+                <span>Все</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="saved-list" id="saved-list"></div>
+      </div>
+    </dialog>
+
+  </body>
+</html>
